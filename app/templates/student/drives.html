@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Available Placement Drives - PlacePro AI{% endblock %}
+{% block content %}
+<div style="margin-bottom: 2rem;">
+  <h1>Active Placement Drives</h1>
+  <p style="color: var(--text-muted);">Explore open campus opportunities and apply based on your eligibility criteria.</p>
+</div>
+
+<div class="grid-2">
+  {% for item in drives %}
+  <div class="glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+      <h3 style="color: #fff;">{{ item.drive.role_title }}</h3>
+      <span class="badge {% if item.match >= 70 %}badge-success{% else %}badge-warning{% endif %}">{{ item.match }}% Match</span>
+    </div>
+    <p style="color: var(--accent-cyan); font-weight: 600;">{{ item.drive.company_name }} &bull; {{ item.drive.package_lpa }} LPA</p>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.75rem 0;">{{ item.drive.description }}</p>
+    
+    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+      <div><strong>Required:</strong> {{ item.drive.required_skills }}</div>
+      <div><strong>Min CGPA:</strong> {{ item.drive.min_cgpa }} | <strong>Deadline:</strong> {{ item.drive.deadline }}</div>
+    </div>
+
+    {% if item.has_applied %}
+      <button class="btn btn-secondary" style="width: 100%;" disabled>Applied Already</button>
+    {% elif not item.eligible %}
+      <button class="btn btn-secondary" style="width: 100%; color: var(--danger);" disabled>Ineligible (Min CGPA {{ item.drive.min_cgpa }})</button>
+    {% else %}
+      <form action="{{ url_for('student.apply_drive', drive_id=item.drive.id) }}" method="POST">
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Apply For Drive</button>
+      </form>
+    {% endif %}
+  </div>
+  {% else %}
+  <p style="color: var(--text-muted);">No recruitment drives open right now.</p>
+  {% endfor %}
+</div>
+{% endblock %}

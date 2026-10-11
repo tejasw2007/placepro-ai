@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Applicant Review - PlacePro AI{% endblock %}
+{% block content %}
+<div style="margin-bottom: 2rem;">
+  <h1>Review Student Applicants</h1>
+  <p style="color: var(--text-muted);">Manage candidate qualifications, review AI skill match percentages, and update status.</p>
+</div>
+
+<div class="glass-card">
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>Candidate</th>
+          <th>Company / Role</th>
+          <th>CGPA</th>
+          <th>AI Match</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in applications %}
+        <tr>
+          <td>
+            <strong>{{ app.applicant.full_name }}</strong><br>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">{{ app.applicant.email }}</span>
+          </td>
+          <td>
+            <strong>{{ app.drive.company_name }}</strong><br>
+            <span style="font-size: 0.85rem; color: var(--text-muted);">{{ app.drive.role_title }}</span>
+          </td>
+          <td>{{ app.applicant.cgpa }}</td>
+          <td>
+            <span class="badge {% if app.match_percentage >= 70 %}badge-success{% elif app.match_percentage >= 40 %}badge-warning{% else %}badge-danger{% endif %}">
+              {{ app.match_percentage }}%
+            </span>
+          </td>
+          <td>
+            <span class="badge {% if app.status == 'Shortlisted' %}badge-success{% elif app.status == 'Rejected' %}badge-danger{% else %}badge-warning{% endif %}">
+              {{ app.status }}
+            </span>
+          </td>
+          <td>
+            <form action="{{ url_for('admin.update_status', app_id=app.id) }}" method="POST" style="display: flex; gap: 0.5rem;">
+              <select name="status" class="form-control" style="padding: 0.3rem 0.5rem; font-size: 0.85rem; width: auto;">
+                <option value="Under Review" {% if app.status == 'Under Review' %}selected{% endif %}>Review</option>
+                <option value="Shortlisted" {% if app.status == 'Shortlisted' %}selected{% endif %}>Shortlist</option>
+                <option value="Rejected" {% if app.status == 'Rejected' %}selected{% endif %}>Reject</option>
+              </select>
+              <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Save</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" style="text-align: center; color: var(--text-muted);">No student applications submitted yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

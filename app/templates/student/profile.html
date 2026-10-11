@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}My Profile - PlacePro AI{% endblock %}
+{% block content %}
+<div style="max-width: 650px; margin: 1rem auto;">
+  <div class="glass-card">
+    <h2 style="margin-bottom: 0.5rem;">Academic & Placement Profile</h2>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Ensure accurate details to maximize your placement readiness score.</p>
+
+    <form method="POST">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" class="form-control" value="{{ current_user.full_name }}" disabled>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Degree / Department</label>
+          <input type="text" name="degree" class="form-control" value="{{ current_user.degree }}" placeholder="e.g. BCA">
+        </div>
+        <div class="form-group">
+          <label>Passing Year</label>
+          <input type="number" name="passing_year" class="form-control" value="{{ current_user.passing_year }}" placeholder="2026">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Current CGPA (Out of 10.0)</label>
+        <input type="number" step="0.01" name="cgpa" class="form-control" value="{{ current_user.cgpa }}" placeholder="8.50" required>
+      </div>
+      <div class="form-group">
+        <label>Key Technical Skills (Separated by commas)</label>
+        <input type="text" name="skills" class="form-control" value="{{ current_user.skills }}" placeholder="Python, SQL, Flask, Excel, Power BI">
+      </div>
+      <div class="form-group">
+        <label>Resume Summary & Career Objective</label>
+        <textarea name="resume_summary" class="form-control" rows="4">{{ current_user.resume_summary }}</textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Save Profile & Calculate Score</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

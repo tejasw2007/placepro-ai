@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - PlacePro AI{% endblock %}
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+  <div>
+    <h1>Admin Placement Operations</h1>
+    <p style="color: var(--text-muted);">Campus recruitment monitoring and drive configuration portal.</p>
+  </div>
+  <a href="{{ url_for('admin.new_drive') }}" class="btn btn-primary">+ Post New Drive</a>
+</div>
+
+<div class="grid-4" style="margin-bottom: 2.5rem;">
+  <div class="glass-card">
+    <span style="font-size: 0.8rem; color: var(--text-muted);">REGISTERED STUDENTS</span>
+    <h2 style="font-size: 2.2rem; color: var(--accent-cyan);">{{ total_students }}</h2>
+  </div>
+  <div class="glass-card">
+    <span style="font-size: 0.8rem; color: var(--text-muted);">PLACEMENT DRIVES</span>
+    <h2 style="font-size: 2.2rem; color: var(--accent-blue);">{{ total_drives }}</h2>
+  </div>
+  <div class="glass-card">
+    <span style="font-size: 0.8rem; color: var(--text-muted);">TOTAL APPLICATIONS</span>
+    <h2 style="font-size: 2.2rem; color: var(--accent-purple);">{{ total_applications }}</h2>
+  </div>
+  <div class="glass-card">
+    <span style="font-size: 0.8rem; color: var(--text-muted);">SHORTLISTED</span>
+    <h2 style="font-size: 2.2rem; color: var(--success);">{{ shortlisted_count }}</h2>
+  </div>
+</div>
+
+<h3 style="margin-bottom: 1rem;">Active Recruitment Drives</h3>
+<div class="glass-card">
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Role</th>
+          <th>Package</th>
+          <th>Cut-off CGPA</th>
+          <th>Required Stack</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for drive in drives %}
+        <tr>
+          <td><strong>{{ drive.company_name }}</strong></td>
+          <td>{{ drive.role_title }}</td>
+          <td>{{ drive.package_lpa }} LPA</td>
+          <td>{{ drive.min_cgpa }}</td>
+          <td style="font-size: 0.85rem; max-width: 250px;">{{ drive.required_skills }}</td>
+          <td><span class="badge badge-success">{{ drive.status }}</span></td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" style="text-align: center; color: var(--text-muted);">No placement drives created yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

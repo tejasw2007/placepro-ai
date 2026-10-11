@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="text-align: center; padding: 4rem 1rem;">
+  <span class="badge badge-info" style="margin-bottom: 1.5rem;">Campus Recruiter & AI Matcher</span>
+  <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 1.25rem; line-height: 1.2;">
+    Smart Placement Management <br><span style="color: var(--accent-cyan);">Powered by Artificial Intelligence</span>
+  </h1>
+  <p style="color: var(--text-muted); max-width: 650px; margin: 0 auto 2.5rem; font-size: 1.1rem; line-height: 1.6;">
+    Analyze candidate skills, parse resume summaries, calculate real-time placement readiness, and match students directly with suitable hiring companies.
+  </p>
+  <div style="display: flex; gap: 1rem; justify-content: center;">
+    <a href="{{ url_for('auth.register') }}" class="btn btn-primary" style="font-size: 1.05rem; padding: 0.8rem 1.8rem;">Get Started</a>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-secondary" style="font-size: 1.05rem; padding: 0.8rem 1.8rem;">Access Portal</a>
+  </div>
+</div>
+
+<div class="grid-3" style="margin-top: 2rem;">
+  <div class="glass-card">
+    <h3 style="color: var(--accent-cyan); margin-bottom: 0.75rem;">AI Resume Analyzer</h3>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">Evaluates summary keywords, identifies missing technical proficiencies, and recommends ideal roles.</p>
+  </div>
+  <div class="glass-card">
+    <h3 style="color: var(--accent-blue); margin-bottom: 0.75rem;">Readiness Prediction</h3>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">Combines academic CGPA with practical technical skills to generate a weighted readiness index.</p>
+  </div>
+  <div class="glass-card">
+    <h3 style="color: var(--accent-purple); margin-bottom: 0.75rem;">Automated Admin Hub</h3>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">Empowers placement cells to publish drives, filter applicant compatibility, and monitor outcomes.</p>
+  </div>
+</div>
+{% endblock %}

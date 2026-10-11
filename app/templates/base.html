@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}PlacePro AI{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="{{ url_for('auth.home') }}" class="nav-brand">
+      PlacePro <span>AI</span>
+    </a>
+    <div class="nav-links">
+      {% if current_user.is_authenticated %}
+        {% if current_user.role == 'student' %}
+          <a href="{{ url_for('student.dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('student.analyzer') }}">AI Resume Analyzer</a>
+          <a href="{{ url_for('student.drives') }}">Placements</a>
+          <a href="{{ url_for('student.profile') }}">Profile</a>
+        {% elif current_user.role == 'admin' %}
+          <a href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a>
+          <a href="{{ url_for('admin.new_drive') }}">Post Drive</a>
+          <a href="{{ url_for('admin.applicants') }}">Applicants</a>
+        {% endif %}
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary" style="padding: 0.4rem 0.8rem;">Logout</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary" style="padding: 0.4rem 0.9rem;">Sign Up</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+
+  <footer style="text-align: center; padding: 2rem 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--glass-border);">
+    &copy; 2026 PlacePro AI — Smart Placement Management System
+  </footer>
+
+</body>
+</html>
