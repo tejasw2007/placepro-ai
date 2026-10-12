@@ -1,41 +1,16 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+import os
 from werkzeug.security import generate_password_hash
-from config import Config
+from app import create_app, db
+from app.models import User, JobDrive
 
-db = SQLAlchemy()
-login_manager = LoginManager()
+app = create_app()
 
-def create_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
-
-    db.init_app(app)
-    login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
-    login_manager.login_message_category = 'warning'
-
-    from app.models import User, JobDrive
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
-
-    # Register blueprints
-    from app.routes.auth import auth_bp
-    from app.routes.student import student_bp
-    from app.routes.admin import admin_bp
-
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(student_bp, url_prefix='/student')
-    app.register_blueprint(admin_bp, url_prefix='/admin')
-
-    # AUTO-INITIALIZE DATABASE TABLES ON STARTUP
+def seed_initial_records():
+    """Initializes tables and seeds a default admin and sample placement drive."""
     with app.app_context():
         db.create_all()
 
-        # Seed default admin if missing
+        # Check if an admin exists, otherwise seed
         if not User.query.filter_by(email='admin@placepro.edu').first():
             admin_user = User(
                 full_name='Placement Administrator',
@@ -57,6 +32,8 @@ def create_app():
             )
             db.session.add(sample_drive)
             db.session.commit()
-            print("[INFO] Database tables auto-created and seeded successfully.")
+            print("[INFO] Database initialized with default admin and sample drive.")
 
-    return app
+if __name__ == '__main__':
+    seed_initial_records()
+    app.run(host='0.0.0.0', port=5000, debug=True)

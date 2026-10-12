@@ -4,13 +4,21 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY', 'placepro-super-secret-key-prod-2026')
+    SECRET_KEY = os.getenv('SECRET_KEY', 'placepro-ai-super-presentation-key-2026')
     
-    raw_url = os.getenv('DATABASE_URL', 'sqlite:///placepro.db')
+    # Read database URL provided by environment or Render
+    raw_db_url = os.getenv('DATABASE_URL', '').strip()
     
-    # Render provides postgres://, which SQLAlchemy 1.4+ deprecated
-    if raw_url.startswith("postgres://"):
-        raw_url = raw_url.replace("postgres://", "postgresql://", 1)
+    # Clean and force correct PostgreSQL driver prefix
+    if raw_db_url:
+        if raw_db_url.startswith('postgres://'):
+            raw_db_url = raw_db_url.replace('postgres://', 'postgresql+psycopg2://', 1)
+        elif raw_db_url.startswith('postgresql://'):
+            raw_db_url = raw_db_url.replace('postgresql://', 'postgresql+psycopg2://', 1)
+        SQLALCHEMY_DATABASE_URI = raw_db_url
+    else:
+        # Failsafe fallback to local SQLite so the project NEVER crashes
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'placepro.db')
         
-    SQLALCHEMY_DATABASE_URI = raw_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
