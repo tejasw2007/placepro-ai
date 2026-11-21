@@ -3,25 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}PlacePro AI — Smart Campus Recruitment{% endblock %}</title>
+  <title>{% block title %}PlacePro AI — Intelligent Campus Recruitment{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-  <!-- Animated Ambient Background -->
-  <div class="aurora-bg">
-    <div class="aurora-orb orb-1"></div>
-    <div class="aurora-orb orb-2"></div>
-    <div class="aurora-orb orb-3"></div>
+  <!-- Soft Pastel Aurora Background -->
+  <div class="aurora-canvas">
+    <div class="aurora-blob blob-cyan"></div>
+    <div class="aurora-blob blob-indigo"></div>
+    <div class="aurora-blob blob-violet"></div>
   </div>
-  <div class="grid-overlay"></div>
+  <div class="tech-grid"></div>
 
-  <!-- Floating Pill Navbar -->
+  <!-- Floating Frosted Glass Navbar -->
   <nav class="navbar">
     <a href="{{ url_for('auth.home') }}" class="nav-brand">
-      <div class="brand-dot"></div>
-      PlacePro <span>AI</span>
+      <!-- Clean Geometric Gradient Emblem -->
+      <svg class="brand-logo-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#0284C7"/>
+            <stop offset="55%" stop-color="#2563EB"/>
+            <stop offset="100%" stop-color="#4F46E5"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="2" width="36" height="36" rx="11" fill="url(#logoGrad)" fill-opacity="0.12" stroke="url(#logoGrad)" stroke-width="2.2"/>
+        <path d="M12 26L18.5 19.5L22.5 23.5L28 15" stroke="url(#logoGrad)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="28" cy="15" r="3" fill="#2563EB"/>
+        <circle cx="12" cy="26" r="2.2" fill="#0284C7"/>
+      </svg>
+      <div>PlacePro <span>AI</span></div>
     </a>
+
     <div class="nav-links">
       {% if current_user.is_authenticated %}
         {% if current_user.role == 'student' %}
@@ -34,10 +48,10 @@
           <a href="{{ url_for('admin.new_drive') }}">Post Drive</a>
           <a href="{{ url_for('admin.applicants') }}">Applicants</a>
         {% endif %}
-        <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary" style="padding: 0.45rem 1.1rem; font-size: 0.85rem;">Sign Out</a>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary" style="padding: 0.45rem 1.15rem; font-size: 0.85rem;">Sign Out</a>
       {% else %}
         <a href="{{ url_for('auth.login') }}">Sign In</a>
-        <a href="{{ url_for('auth.register') }}" class="btn btn-primary" style="padding: 0.45rem 1.2rem; font-size: 0.85rem;">Get Started</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary" style="padding: 0.45rem 1.25rem; font-size: 0.85rem;">Get Started</a>
       {% endif %}
     </div>
   </nav>
@@ -54,7 +68,7 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer style="position: relative; z-index: 2; text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.85rem;">
+  <footer style="position: relative; z-index: 2; text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid rgba(15, 23, 42, 0.06);">
     &copy; 2026 PlacePro AI &bull; Intelligent Campus Placement Ecosystem
   </footer>
 
