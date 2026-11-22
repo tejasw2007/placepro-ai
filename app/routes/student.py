@@ -1,10 +1,23 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app.models import JobDrive, Application, User
+from app.models import JobDrive, Application
 from app.utils import calculate_resume_match, calculate_readiness_score
 from app import db
 
 student_bp = Blueprint('student', __name__)
+
+def safe_float(val, default=0.0, min_val=0.0, max_val=10.0):
+    try:
+        num = float(val)
+        return max(min_val, min(max_val, num))
+    except (TypeError, ValueError):
+        return default
+
+def safe_int(val, default=2026):
+    try:
+        return int(val)
+    except (TypeError, ValueError):
+        return default
 
 @student_bp.before_request
 @login_required
@@ -15,13 +28,12 @@ def check_student_role():
 
 @student_bp.route('/dashboard')
 def dashboard():
-    applied_apps = Application.query.filter_by(user_id=current_user.id).all()
+    applied_apps = Application.query.filter_by(user_id=current_user.id).order_by(Application.applied_date.desc()).all()
     open_drives = JobDrive.query.filter_by(status='Open').all()
-    
-    # Calculate match for open drives
+
     drives_with_match = []
     for d in open_drives:
-        analysis = calculate_resume_match(current_user.skills, current_user.resume_summary, d.required_skills)
+        analysis = calculate_resume_match(current_user.skills or '', current_user.resume_summary or '', d.required_skills)
         drives_with_match.append({
             "drive": d,
             "match": analysis["match_score"]
@@ -37,13 +49,12 @@ def dashboard():
 @student_bp.route('/profile', methods=['GET', 'POST'])
 def profile():
     if request.method == 'POST':
-        current_user.degree = request.form.get('degree')
-        current_user.passing_year = int(request.form.get('passing_year', 2026))
-        current_user.cgpa = float(request.form.get('cgpa', 0.0))
+        current_user.degree = request.form.get('degree', 'BCA').strip() or 'BCA'
+        current_user.passing_year = safe_int(request.form.get('passing_year'), 2026)
+        current_user.cgpa = safe_float(request.form.get('cgpa'), 0.0, 0.0, 10.0)
         current_user.skills = request.form.get('skills', '').strip()
         current_user.resume_summary = request.form.get('resume_summary', '').strip()
 
-        # Update readiness score
         current_user.readiness_score = calculate_readiness_score(
             current_user.cgpa, current_user.skills, current_user.resume_summary
         )
@@ -56,20 +67,18 @@ def profile():
 
 @student_bp.route('/analyzer', methods=['GET', 'POST'])
 def analyzer():
-    """AI Resume Analyzer and Company Recommendation Engine"""
     recommendations = []
-    analysis_result = None
+    analysis_result = False
 
     if request.method == 'POST':
         custom_summary = request.form.get('resume_summary', '').strip()
         custom_skills = request.form.get('skills', '').strip()
 
-        # Update if user wants to save to profile
         if request.form.get('save_to_profile'):
             current_user.resume_summary = custom_summary
             current_user.skills = custom_skills
             current_user.readiness_score = calculate_readiness_score(
-                current_user.cgpa, custom_skills, custom_summary
+                current_user.cgpa or 0.0, custom_skills, custom_summary
             )
             db.session.commit()
 
@@ -90,17 +99,18 @@ def analyzer():
 
 @student_bp.route('/drives')
 def drives():
-    all_drives = JobDrive.query.filter_by(status='Open').all()
-    applied_ids = [app.drive_id for app in current_user.applications]
+    all_drives = JobDrive.query.filter_by(status='Open').order_by(JobDrive.created_at.desc()).all()
+    applied_ids = {app.drive_id for app in current_user.applications}
+    student_cgpa = current_user.cgpa or 0.0
 
     drive_list = []
     for d in all_drives:
-        res = calculate_resume_match(current_user.skills, current_user.resume_summary, d.required_skills)
+        res = calculate_resume_match(current_user.skills or '', current_user.resume_summary or '', d.required_skills)
         drive_list.append({
             "drive": d,
             "match": res["match_score"],
             "has_applied": d.id in applied_ids,
-            "eligible": current_user.cgpa >= d.min_cgpa
+            "eligible": student_cgpa >= d.min_cgpa
         })
 
     return render_template('student/drives.html', drives=drive_list)
@@ -112,12 +122,12 @@ def apply_drive(drive_id):
         flash('You have already submitted an application for this drive.', 'warning')
         return redirect(url_for('student.drives'))
 
-    drive = JobDrive.query.get_or_404(drive_id)
-    if current_user.cgpa < drive.min_cgpa:
-        flash(f'CGPA below requirement ({drive.min_cgpa}). Cannot apply.', 'danger')
+    drive = db.get_or_404(JobDrive, drive_id)
+    if (current_user.cgpa or 0.0) < drive.min_cgpa:
+        flash(f'CGPA below minimum requirement ({drive.min_cgpa}). Cannot apply.', 'danger')
         return redirect(url_for('student.drives'))
 
-    match_res = calculate_resume_match(current_user.skills, current_user.resume_summary, drive.required_skills)
+    match_res = calculate_resume_match(current_user.skills or '', current_user.resume_summary or '', drive.required_skills)
     new_app = Application(
         user_id=current_user.id,
         drive_id=drive.id,

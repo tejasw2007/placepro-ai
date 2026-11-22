@@ -1,85 +1,67 @@
 {% extends "base.html" %}
-{% block title %}Student Dashboard - PlacePro AI{% endblock %}
+{% block title %}Student Dashboard — PlacePro AI{% endblock %}
 {% block content %}
-<div style="margin-bottom: 2rem;">
-  <h1>Welcome, {{ current_user.full_name }}</h1>
-  <p style="color: var(--text-muted);">Manage your active job applications and review readiness predictions.</p>
+<div style="margin-bottom: 2rem;" class="reveal-up">
+  <h1>Welcome, <span class="text-gradient">{{ current_user.full_name }}</span></h1>
+  <p style="color: var(--text-secondary);">Track your placement readiness, AI job matches, and active applications.</p>
 </div>
 
-<div class="grid-3" style="margin-bottom: 2.5rem;">
+<div class="grid-3 reveal-up delay-1" style="margin-bottom: 2rem;">
   <div class="glass-card">
-    <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">READINESS SCORE</span>
-    <h2 style="font-size: 2.5rem; margin: 0.5rem 0; color: var(--accent-cyan);">{{ current_user.readiness_score }}%</h2>
+    <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Placement Readiness</span>
+    <div style="font-size: 2.2rem; font-weight: 800; color: var(--blue); margin: 0.35rem 0;">{{ current_user.readiness_score }}%</div>
     <div class="progress-bar-container">
       <div class="progress-fill" style="width: {{ current_user.readiness_score }}%;"></div>
     </div>
   </div>
+
   <div class="glass-card">
-    <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">ACADEMIC CGPA</span>
-    <h2 style="font-size: 2.5rem; margin: 0.5rem 0;">{{ current_user.cgpa }}</h2>
-    <span style="color: var(--text-muted); font-size: 0.85rem;">Degree: {{ current_user.degree }} ({{ current_user.passing_year }})</span>
+    <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Academic Standing</span>
+    <div style="font-size: 2.2rem; font-weight: 800; color: var(--text-main); margin: 0.35rem 0;">{{ "%.2f"|format(current_user.cgpa or 0.0) }} <span style="font-size: 1rem; color: var(--text-muted);">CGPA</span></div>
+    <p style="font-size: 0.88rem; color: var(--text-secondary);">{{ current_user.degree }} &bull; Batch of {{ current_user.passing_year }}</p>
   </div>
+
   <div class="glass-card">
-    <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">APPLICATIONS SUBMITTED</span>
-    <h2 style="font-size: 2.5rem; margin: 0.5rem 0; color: var(--accent-purple);">{{ applications|length }}</h2>
-    <span style="color: var(--text-muted); font-size: 0.85rem;">Active track records</span>
+    <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Applications Submitted</span>
+    <div style="font-size: 2.2rem; font-weight: 800; color: var(--emerald); margin: 0.35rem 0;">{{ applications|length }}</div>
+    <a href="{{ url_for('student.analyzer') }}" style="font-size: 0.88rem; color: var(--blue); font-weight: 600; text-decoration: none;">Run AI Resume Analyzer &rarr;</a>
   </div>
 </div>
 
-<h3 style="margin-bottom: 1rem;">Top Recommended Placement Drives</h3>
-<div class="grid-2" style="margin-bottom: 2.5rem;">
-  {% for item in recommended_drives %}
+<div class="grid-2 reveal-up delay-2">
   <div class="glass-card">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
-      <h3 style="color: #fff;">{{ item.drive.role_title }}</h3>
-      <span class="badge badge-info">{{ item.match }}% Match</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <h3>Top AI Recommended Drives</h3>
+      <a href="{{ url_for('student.drives') }}" style="font-size: 0.85rem; color: var(--blue); font-weight: 600; text-decoration: none;">View All</a>
     </div>
-    <p style="color: var(--accent-cyan); font-weight: 500; font-size: 0.95rem;">{{ item.drive.company_name }} &bull; {{ item.drive.package_lpa }} LPA</p>
-    <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.75rem 0;">Required: {{ item.drive.required_skills }}</p>
-    <a href="{{ url_for('student.drives') }}" class="btn btn-secondary" style="font-size: 0.85rem; width: 100%;">View All Opportunities</a>
+    {% for item in recommended_drives %}
+      <div style="padding: 1rem 0; border-bottom: 1px solid rgba(15, 23, 42, 0.06);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong style="color: var(--text-main);">{{ item.drive.role_title }}</strong>
+          <span class="badge {% if item.match >= 70 %}badge-success{% elif item.match >= 40 %}badge-warning{% else %}badge-info{% endif %}">{{ item.match }}% Match</span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.2rem;">{{ item.drive.company_name }} &bull; {{ item.drive.package_lpa }} LPA</p>
+      </div>
+    {% else %}
+      <p style="color: var(--text-muted); font-size: 0.9rem;">No open placement drives available right now.</p>
+    {% endfor %}
   </div>
-  {% else %}
-  <p style="color: var(--text-muted);">No open drives currently posted.</p>
-  {% endfor %}
-</div>
 
-<h3 style="margin-bottom: 1rem;">My Applied Drives</h3>
-<div class="glass-card">
-  <div class="table-responsive">
-    <table>
-      <thead>
-        <tr>
-          <th>Company</th>
-          <th>Role</th>
-          <th>Date Applied</th>
-          <th>Match Index</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for app in applications %}
-        <tr>
-          <td><strong>{{ app.drive.company_name }}</strong></td>
-          <td>{{ app.drive.role_title }}</td>
-          <td>{{ app.applied_date.strftime('%Y-%m-%d') }}</td>
-          <td><span class="badge badge-info">{{ app.match_percentage }}%</span></td>
-          <td>
-            {% if app.status == 'Shortlisted' %}
-              <span class="badge badge-success">Shortlisted</span>
-            {% elif app.status == 'Rejected' %}
-              <span class="badge badge-danger">Rejected</span>
-            {% else %}
-              <span class="badge badge-warning">Under Review</span>
-            {% endif %}
-          </td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="5" style="text-align: center; color: var(--text-muted);">No submitted applications yet.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="glass-card">
+    <h3 style="margin-bottom: 1.25rem;">My Application Status</h3>
+    {% for app in applications %}
+      <div style="padding: 1rem 0; border-bottom: 1px solid rgba(15, 23, 42, 0.06); display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <strong style="color: var(--text-main);">{{ app.drive.company_name }}</strong>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">{{ app.drive.role_title }} ({{ app.match_percentage }}% Match)</p>
+        </div>
+        <span class="badge {% if app.status == 'Shortlisted' %}badge-success{% elif app.status == 'Rejected' %}badge-danger{% else %}badge-warning{% endif %}">
+          {{ app.status }}
+        </span>
+      </div>
+    {% else %}
+      <p style="color: var(--text-muted); font-size: 0.9rem;">You haven't applied to any drives yet. Visit <a href="{{ url_for('student.drives') }}" style="color: var(--blue);">Drives</a> to apply.</p>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}

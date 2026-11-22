@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}AI Resume Analyzer - PlacePro AI{% endblock %}
+{% block title %}AI Resume Analyzer — PlacePro AI{% endblock %}
 {% block content %}
-<div style="margin-bottom: 2rem;">
-  <h1>AI Resume & Skill Analyzer</h1>
-  <p style="color: var(--text-muted);">Paste your resume summary and skills below to receive instant matching scores against campus recruitment drives.</p>
+<div style="margin-bottom: 2rem;" class="reveal-up">
+  <h1>AI Resume &amp; Skill Analyzer</h1>
+  <p style="color: var(--text-secondary);">Paste your resume summary and skills below to receive instant matching scores against campus recruitment drives.</p>
 </div>
 
-<div class="glass-card" style="margin-bottom: 2rem;">
+<div class="glass-card reveal-up delay-1" style="margin-bottom: 2rem;">
   <form method="POST">
     <div class="form-group">
       <label>Technical Skills (Comma separated)</label>
@@ -18,9 +18,9 @@
       <label>Resume Professional Summary</label>
       <textarea name="resume_summary" class="form-control" rows="5" placeholder="Detail your projects, technical competencies, frameworks, and data projects...">{{ current_user.resume_summary }}</textarea>
     </div>
-    <div style="display: flex; gap: 1rem; align-items: center;">
+    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
       <button type="submit" class="btn btn-primary">Run AI Analysis</button>
-      <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-muted); cursor: pointer;">
+      <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-secondary); cursor: pointer;">
         <input type="checkbox" name="save_to_profile" value="1" checked> Save and update my profile
       </label>
     </div>
@@ -28,21 +28,21 @@
 </div>
 
 {% if analyzed %}
-<h3 style="margin-bottom: 1rem;">Matched Job Recommendations</h3>
-<div class="grid-2">
+<h3 style="margin-bottom: 1rem;" class="reveal-up">Matched Job Recommendations</h3>
+<div class="grid-2 reveal-up delay-1">
   {% for rec in recommendations %}
   <div class="glass-card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-      <h3>{{ rec.drive.role_title }}</h3>
+      <h3 style="color: var(--text-main);">{{ rec.drive.role_title }}</h3>
       <span class="badge {% if rec.score >= 70 %}badge-success{% elif rec.score >= 40 %}badge-warning{% else %}badge-danger{% endif %}">
         {{ rec.score }}% Match
       </span>
     </div>
-    <p style="color: var(--accent-cyan); font-weight: 500;">{{ rec.drive.company_name }} &bull; {{ rec.drive.package_lpa }} LPA</p>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.75rem 0;">{{ rec.drive.description }}</p>
+    <p style="color: var(--blue); font-weight: 700;">{{ rec.drive.company_name }} &bull; {{ rec.drive.package_lpa }} LPA</p>
+    <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0.75rem 0;">{{ rec.drive.description }}</p>
 
     <div style="margin: 0.75rem 0;">
-      <span style="font-size: 0.8rem; color: var(--text-muted);">Skills You Match:</span>
+      <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Skills You Match:</span>
       <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.25rem;">
         {% for m in rec.matched %}
           <span class="badge badge-success" style="font-size: 0.75rem;">{{ m }}</span>
@@ -53,7 +53,7 @@
     </div>
 
     <div style="margin: 0.75rem 0;">
-      <span style="font-size: 0.8rem; color: var(--text-muted);">Skills to Improve:</span>
+      <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Skills to Improve:</span>
       <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.25rem;">
         {% for missing in rec.missing %}
           <span class="badge badge-danger" style="font-size: 0.75rem;">+ {{ missing }}</span>

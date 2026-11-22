@@ -1,35 +1,35 @@
 {% extends "base.html" %}
-{% block title %}Admin Dashboard - PlacePro AI{% endblock %}
+{% block title %}Admin Dashboard — PlacePro AI{% endblock %}
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;" class="reveal-up">
   <div>
-    <h1>Admin Placement Operations</h1>
-    <p style="color: var(--text-muted);">Campus recruitment monitoring and drive configuration portal.</p>
+    <h1>Placement Command Center</h1>
+    <p style="color: var(--text-secondary);">Monitor registered candidates, recruitment drives, and selection pipelines.</p>
   </div>
-  <a href="{{ url_for('admin.new_drive') }}" class="btn btn-primary">+ Post New Drive</a>
+  <a href="{{ url_for('admin.new_drive') }}" class="btn btn-primary">+ Publish New Drive</a>
 </div>
 
-<div class="grid-4" style="margin-bottom: 2.5rem;">
+<div class="grid-4 reveal-up delay-1" style="margin-bottom: 2rem;">
   <div class="glass-card">
-    <span style="font-size: 0.8rem; color: var(--text-muted);">REGISTERED STUDENTS</span>
-    <h2 style="font-size: 2.2rem; color: var(--accent-cyan);">{{ total_students }}</h2>
+    <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Registered Students</span>
+    <div style="font-size: 2rem; font-weight: 800; color: var(--text-main); margin-top: 0.35rem;">{{ total_students }}</div>
   </div>
   <div class="glass-card">
-    <span style="font-size: 0.8rem; color: var(--text-muted);">PLACEMENT DRIVES</span>
-    <h2 style="font-size: 2.2rem; color: var(--accent-blue);">{{ total_drives }}</h2>
+    <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Active Drives</span>
+    <div style="font-size: 2rem; font-weight: 800; color: var(--blue); margin-top: 0.35rem;">{{ total_drives }}</div>
   </div>
   <div class="glass-card">
-    <span style="font-size: 0.8rem; color: var(--text-muted);">TOTAL APPLICATIONS</span>
-    <h2 style="font-size: 2.2rem; color: var(--accent-purple);">{{ total_applications }}</h2>
+    <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Total Applications</span>
+    <div style="font-size: 2rem; font-weight: 800; color: var(--indigo); margin-top: 0.35rem;">{{ total_applications }}</div>
   </div>
   <div class="glass-card">
-    <span style="font-size: 0.8rem; color: var(--text-muted);">SHORTLISTED</span>
-    <h2 style="font-size: 2.2rem; color: var(--success);">{{ shortlisted_count }}</h2>
+    <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Shortlisted</span>
+    <div style="font-size: 2rem; font-weight: 800; color: var(--emerald); margin-top: 0.35rem;">{{ shortlisted_count }}</div>
   </div>
 </div>
 
-<h3 style="margin-bottom: 1rem;">Active Recruitment Drives</h3>
-<div class="glass-card">
+<div class="glass-card reveal-up delay-2">
+  <h3 style="margin-bottom: 1.25rem;">Published Placement Drives</h3>
   <div class="table-responsive">
     <table>
       <thead>
@@ -37,24 +37,24 @@
           <th>Company</th>
           <th>Role</th>
           <th>Package</th>
-          <th>Cut-off CGPA</th>
-          <th>Required Stack</th>
+          <th>Min CGPA</th>
+          <th>Deadline</th>
           <th>Status</th>
         </tr>
       </thead>
       <tbody>
-        {% for drive in drives %}
+        {% for d in drives %}
         <tr>
-          <td><strong>{{ drive.company_name }}</strong></td>
-          <td>{{ drive.role_title }}</td>
-          <td>{{ drive.package_lpa }} LPA</td>
-          <td>{{ drive.min_cgpa }}</td>
-          <td style="font-size: 0.85rem; max-width: 250px;">{{ drive.required_skills }}</td>
-          <td><span class="badge badge-success">{{ drive.status }}</span></td>
+          <td><strong>{{ d.company_name }}</strong></td>
+          <td>{{ d.role_title }}</td>
+          <td>{{ d.package_lpa }} LPA</td>
+          <td>{{ d.min_cgpa }}</td>
+          <td>{{ d.deadline }}</td>
+          <td><span class="badge badge-success">{{ d.status }}</span></td>
         </tr>
         {% else %}
         <tr>
-          <td colspan="6" style="text-align: center; color: var(--text-muted);">No placement drives created yet.</td>
+          <td colspan="6" style="text-align: center; color: var(--text-muted);">No drives published yet.</td>
         </tr>
         {% endfor %}
       </tbody>

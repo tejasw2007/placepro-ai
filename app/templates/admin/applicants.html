@@ -1,38 +1,38 @@
 {% extends "base.html" %}
-{% block title %}Applicant Review - PlacePro AI{% endblock %}
+{% block title %}Manage Applicants — PlacePro AI{% endblock %}
 {% block content %}
-<div style="margin-bottom: 2rem;">
-  <h1>Review Student Applicants</h1>
-  <p style="color: var(--text-muted);">Manage candidate qualifications, review AI skill match percentages, and update status.</p>
+<div style="margin-bottom: 2rem;" class="reveal-up">
+  <h1>Candidate Screening &amp; Applicants</h1>
+  <p style="color: var(--text-secondary);">Review student AI match percentages and update recruitment statuses.</p>
 </div>
 
-<div class="glass-card">
+<div class="glass-card reveal-up delay-1">
   <div class="table-responsive">
     <table>
       <thead>
         <tr>
-          <th>Candidate</th>
-          <th>Company / Role</th>
+          <th>Student Name</th>
           <th>CGPA</th>
+          <th>Company &amp; Role</th>
           <th>AI Match</th>
-          <th>Status</th>
-          <th>Action</th>
+          <th>Current Status</th>
+          <th>Update Decision</th>
         </tr>
       </thead>
       <tbody>
         {% for app in applications %}
         <tr>
           <td>
-            <strong>{{ app.applicant.full_name }}</strong><br>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">{{ app.applicant.email }}</span>
+            <strong>{{ app.applicant.full_name }}</strong>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">{{ app.applicant.email }}</div>
+          </td>
+          <td>{{ "%.2f"|format(app.applicant.cgpa or 0.0) }}</td>
+          <td>
+            <strong>{{ app.drive.company_name }}</strong>
+            <div style="font-size: 0.82rem; color: var(--text-secondary);">{{ app.drive.role_title }}</div>
           </td>
           <td>
-            <strong>{{ app.drive.company_name }}</strong><br>
-            <span style="font-size: 0.85rem; color: var(--text-muted);">{{ app.drive.role_title }}</span>
-          </td>
-          <td>{{ app.applicant.cgpa }}</td>
-          <td>
-            <span class="badge {% if app.match_percentage >= 70 %}badge-success{% elif app.match_percentage >= 40 %}badge-warning{% else %}badge-danger{% endif %}">
+            <span class="badge {% if app.match_percentage >= 70 %}badge-success{% elif app.match_percentage >= 40 %}badge-warning{% else %}badge-info{% endif %}">
               {{ app.match_percentage }}%
             </span>
           </td>
@@ -42,13 +42,13 @@
             </span>
           </td>
           <td>
-            <form action="{{ url_for('admin.update_status', app_id=app.id) }}" method="POST" style="display: flex; gap: 0.5rem;">
-              <select name="status" class="form-control" style="padding: 0.3rem 0.5rem; font-size: 0.85rem; width: auto;">
-                <option value="Under Review" {% if app.status == 'Under Review' %}selected{% endif %}>Review</option>
-                <option value="Shortlisted" {% if app.status == 'Shortlisted' %}selected{% endif %}>Shortlist</option>
-                <option value="Rejected" {% if app.status == 'Rejected' %}selected{% endif %}>Reject</option>
+            <form method="POST" action="{{ url_for('admin.update_status', app_id=app.id) }}" style="display: flex; gap: 0.5rem; align-items: center;">
+              <select name="status" class="form-control" style="padding: 0.4rem 0.65rem; font-size: 0.85rem; width: auto;">
+                <option value="Under Review" {% if app.status == 'Under Review' %}selected{% endif %}>Under Review</option>
+                <option value="Shortlisted" {% if app.status == 'Shortlisted' %}selected{% endif %}>Shortlisted</option>
+                <option value="Rejected" {% if app.status == 'Rejected' %}selected{% endif %}>Rejected</option>
               </select>
-              <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Save</button>
+              <button type="submit" class="btn btn-primary" style="padding: 0.4rem 0.9rem; font-size: 0.82rem;">Save</button>
             </form>
           </td>
         </tr>

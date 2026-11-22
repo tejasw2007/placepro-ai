@@ -8,7 +8,6 @@
 </head>
 <body>
 
-  <!-- Soft Pastel Aurora Background -->
   <div class="aurora-canvas">
     <div class="aurora-blob blob-cyan"></div>
     <div class="aurora-blob blob-indigo"></div>
@@ -16,10 +15,8 @@
   </div>
   <div class="tech-grid"></div>
 
-  <!-- Floating Frosted Glass Navbar -->
   <nav class="navbar">
     <a href="{{ url_for('auth.home') }}" class="nav-brand">
-      <!-- Clean Geometric Gradient Emblem -->
       <svg class="brand-logo-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
@@ -72,5 +69,6 @@
     &copy; 2026 PlacePro AI &bull; Intelligent Campus Placement Ecosystem
   </footer>
 
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

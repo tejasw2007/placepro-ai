@@ -6,6 +6,10 @@ from app import db
 
 auth_bp = Blueprint('auth', __name__)
 
+@auth_bp.route('/health')
+def health_check():
+    return "OK", 200
+
 @auth_bp.route('/')
 def home():
     if current_user.is_authenticated:
@@ -24,27 +28,33 @@ def register():
         email = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '')
         confirm_password = request.form.get('confirm_password', '')
-        role = request.form.get('role', 'student')
+
+        if not full_name or not email or not password:
+            flash('All fields are required.', 'danger')
+            return render_template('register.html')
+
+        if len(password) < 6:
+            flash('Password must be at least 6 characters long.', 'danger')
+            return render_template('register.html')
 
         if password != confirm_password:
             flash('Passwords do not match.', 'danger')
             return render_template('register.html')
 
         if User.query.filter_by(email=email).first():
-            flash('Email already registered. Please login.', 'warning')
+            flash('Email is already registered. Please sign in.', 'warning')
             return redirect(url_for('auth.login'))
 
-        hashed_pw = generate_password_hash(password)
         new_user = User(
             full_name=full_name,
             email=email,
-            password_hash=hashed_pw,
-            role=role if role in ['student', 'admin'] else 'student'
+            password_hash=generate_password_hash(password),
+            role='student'
         )
         db.session.add(new_user)
         db.session.commit()
 
-        flash('Registration successful! Please login to your portal.', 'success')
+        flash('Registration successful! Please sign in to your student portal.', 'success')
         return redirect(url_for('auth.login'))
 
     return render_template('register.html')

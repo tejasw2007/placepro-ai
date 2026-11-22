@@ -1,10 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Post Drive - PlacePro AI{% endblock %}
+{% block title %}Post Drive — PlacePro AI{% endblock %}
 {% block content %}
-<div style="max-width: 650px; margin: 1rem auto;">
+<div style="max-width: 650px; margin: 1rem auto;" class="reveal-up">
   <div class="glass-card">
-    <h2 style="margin-bottom: 0.5rem;">Create Campus Placement Drive</h2>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Publish job criteria for students and AI compatibility matching.</p>
+    <h2 style="margin-bottom: 0.4rem;">Create Campus Placement Drive</h2>
+    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.75rem;">
+      Publish job criteria for students and AI compatibility matching.
+    </p>
 
     <form method="POST">
       <div class="grid-2">
@@ -40,7 +42,7 @@
       </div>
 
       <div class="form-group">
-        <label>Job Description & Responsibilities</label>
+        <label>Job Description &amp; Responsibilities</label>
         <textarea name="description" class="form-control" rows="4" placeholder="Detail the duties and candidate expectations..." required></textarea>
       </div>
 

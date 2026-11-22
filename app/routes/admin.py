@@ -5,6 +5,12 @@ from app import db
 
 admin_bp = Blueprint('admin', __name__)
 
+def safe_float(val, default=0.0):
+    try:
+        return float(val)
+    except (TypeError, ValueError):
+        return default
+
 @admin_bp.before_request
 @login_required
 def check_admin_role():
@@ -19,7 +25,7 @@ def dashboard():
     total_applications = Application.query.count()
     shortlisted_count = Application.query.filter_by(status='Shortlisted').count()
 
-    recent_drives = JobDrive.query.order_by(JobDrive.created_at.desc()).limit(5).all()
+    recent_drives = JobDrive.query.order_by(JobDrive.created_at.desc()).limit(10).all()
 
     return render_template(
         'admin/dashboard.html',
@@ -33,13 +39,17 @@ def dashboard():
 @admin_bp.route('/drives/new', methods=['GET', 'POST'])
 def new_drive():
     if request.method == 'POST':
-        company_name = request.form.get('company_name')
-        role_title = request.form.get('role_title')
-        description = request.form.get('description')
-        required_skills = request.form.get('required_skills')
-        min_cgpa = float(request.form.get('min_cgpa', 6.0))
-        package_lpa = float(request.form.get('package_lpa', 3.5))
-        deadline = request.form.get('deadline')
+        company_name = request.form.get('company_name', '').strip()
+        role_title = request.form.get('role_title', '').strip()
+        description = request.form.get('description', '').strip()
+        required_skills = request.form.get('required_skills', '').strip()
+        min_cgpa = safe_float(request.form.get('min_cgpa'), 6.0)
+        package_lpa = safe_float(request.form.get('package_lpa'), 3.5)
+        deadline = request.form.get('deadline', '').strip()
+
+        if not company_name or not role_title or not required_skills or not deadline:
+            flash('Please fill in all required drive fields.', 'danger')
+            return render_template('admin/new_drive.html')
 
         drive = JobDrive(
             company_name=company_name,
@@ -64,7 +74,7 @@ def applicants():
 
 @admin_bp.route('/application/<int:app_id>/status', methods=['POST'])
 def update_status(app_id):
-    app_record = Application.query.get_or_404(app_id)
+    app_record = db.get_or_404(Application, app_id)
     new_status = request.form.get('status')
     if new_status in ['Under Review', 'Shortlisted', 'Rejected']:
         app_record.status = new_status
