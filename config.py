@@ -9,12 +9,15 @@ class Config:
     raw_db_url = os.getenv('DATABASE_URL', '').strip()
 
     if raw_db_url:
-        # Normalize any postgres/postgresql/psycopg2 scheme to psycopg v3 (Python 3.15 + Neon native)
-        raw_db_url = re.sub(
-            r'^(postgres|postgresql)(\+psycopg2?)?:\/\/',
-            'postgresql+psycopg://',
-            raw_db_url
-        )
+        try:
+            import psycopg  # Uses pure-Python psycopg v3 on Python 3.15
+            dialect = 'postgresql+psycopg://'
+        except ImportError:
+            dialect = 'postgresql+psycopg2://'
+            # Strip channel_binding unsupported by psycopg2 2.9.9
+            raw_db_url = re.sub(r'([?&])channel_binding=[^&]*&?', r'\1', raw_db_url).rstrip('?&')
+
+        raw_db_url = re.sub(r'^(postgres|postgresql)(\+psycopg2?)?:\/\/', dialect, raw_db_url)
         SQLALCHEMY_DATABASE_URI = raw_db_url
     else:
         basedir = os.path.abspath(os.path.dirname(__file__))
